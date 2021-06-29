@@ -1,0 +1,8 @@
+# Initialisation du moteur de réécriture
+RewriteEngine on
+
+# Définition des règles de réécriture
+RewriteRule ^accueil$ index.php?id=1
+RewriteRule ^apropos$ index.php?id=2
+RewriteRule ^temoignages$ index.php?id=3
+RewriteRule ^contact$ index.php?id=4 [L]

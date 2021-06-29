@@ -1,0 +1,9 @@
+.module {
+	height: 75vh;
+}
+
+#imgPreview {
+	width: 33vw; 
+	max-height: 50vh;
+	display: block;
+}
