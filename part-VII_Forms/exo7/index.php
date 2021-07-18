@@ -1,17 +1,28 @@
-<!-- User inputs variables  + Verif -->
+<!-- Exo7&8 -->
+<!-- 7/ Ajouter un champ d'envoi de fichier et afficher le nom et l'extension du fichier. -->
+<!-- 8/ Vérifier que le fichier envoyé est bien un pdf. -->
 <?php
+// 1st method:
+// Which I absolutely don't understand. It returns the path to the tmp folder.
+// if (isset($_FILES["fileToUpload"]) && $_FILES["fileToUpload"]["name"] != NULL) {
+//     $fileInfo = explode(".", $_FILES["fileToUpload"]["tmp_name"]);
+//     var_dump($fileInfo);
+// }
 
-$lname = htmlspecialchars($_POST["lname"]); // Transforme n'importe quel caractère spécial en code html (ex: &#169)
-$fname = htmlspecialchars($_POST["fname"]);
-$usrfile_name = $_FILES["usrfile"]["name"];
-$usrfile_ext = $_FILES["usrfile"]["type"];
-$usrfile_mime = mime_content_type($_FILES["usrfile"]["tmp_name"]);
+// 2nd method:
+if(isset($_FILES["fileToUpload"]) && $_FILES["fileToUpload"]["name"] != NULL) {
+    // The mime_content_type() functions allows to check the real type of the file.
+    $fileInfo = mime_content_type($_FILES["fileToUpload"]["tmp_name"]);
+    // So IF NOT pdf 
+    if($fileInfo != "application/pdf") {
+        $error = "Merci de n'envoyer que des fichier au format pdf.";
+    } else {
+        $success = "Bravo.";
+    }
+}
 
-$namePattern = "/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/";
-
+// NOTE TO SELF: Ok c'est génial ça a l'air de fonctionner mais je comprends quand même pas pourquoi j'ai toujours autant d'erreur qui s'affichent.
 ?>
-
-<!-- Formulaire PHP -->
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -20,71 +31,25 @@ $namePattern = "/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/";
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-    <title>php-706</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>fileTypeVerif</title>
 </head>
 
 <body>
-    <div class="container m-4 align-item-center">
-
-        
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" enctype="multipart/form-data" class="row">
-
-<!-- On place les conditions dans le formulaire pour permettre les deux affichages différents -->
-            <?php
-            if (preg_match($namePattern, $lname) && preg_match($namePattern, $fname) && $usrfile != "false") {
-                echo "<p>Bienvenue " . $lname . " " . $fname . "!</p>";
-                echo "<p>Le fichier que vous avez envoyé est: " . $usrfile_name . "</p>";
-                echo "<p>Le format est " . $usrfile_ext . "</p>";
-                echo "<p>Le mime est " . $usrfile_mime . "</p>";
-                
-            ?>
-                <a href="index.php">
-                    <button class="btn btn-primary">
-                        Retour
-                    </button></a>
-
-            <?php
-
-            } else {
-
-            ?>
-                <div class="col">
-                    <label for="gender" class="form-label"></label>
-                    <select name="gender" id="gender" class="form-select">
-                        <option value="default" selected>Fier d'être...</option>
-                        <option value="male">Mâle</option>
-                        <option value="female">Femelle</option>
-                        <option value="mixed">FeMâle</option>
-                        <option value="animal">Animal</option>
-                        <option value="nonEarthian">Non-Terrestre</option>
-                        <option value="god">God</option>
-                    </select>
-                </div>
-                <div class="col">
-                    <label for="lname" class="form-label">Votre nom:</label>
-                    <input type="text" name="lname" id="lname" placeholder="Michel" class="form-control">
-                </div>
-                <div class="col">
-                    <label for="fname" class="form-label">Votre prénom:</label>
-                    <input type="text" name="fname" id="fname" placeholder="LeVrai" class="form-control">
-                </div>
-                <div class="col">
-                    <label for="usrfile" class="form-label">Votre chat:</label>
-                    <input type="file" name="usrfile" id="usrfile" class="form-control">
-                </div>
-                <div>
-                    <button type="submit" class="btn btn-primary">Envoyer</button>
-                </div>
-
-            <?php
-            }
-            ?>
-
-        </form>
-
+    <div class="container w-60 border border-primary m-3">
+        <form action="index.php" method="POST" enctype="multipart/form-data">
+        <label for="fileToUpload" class="form-label m-3">Envoi de fichier:</label>
+    <input type="file" name="fileToUpload" id="fileToUpload" class="form-control" placeholder="Parcourir...">
+    <button type="submit" class="btn btn-primary m-3">Envoyer</button>
+    </form>
+    <!-- <p>Le fichier s'appelle <?= $fileInfo[0]; ?> et son extension est <?= $fileInfo[1]; ?></p> -->
+    <p>Le fichier s'appelle <?= $fileInfo["filename"]; ?> et son extension est <?= $fileInfo["extension"]; ?></p>
+    <?= isset($error) ? $error : $success ?>
     </div>
 
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script>
 </body>
 
 </html>
